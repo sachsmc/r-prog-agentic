@@ -73,7 +73,9 @@ def citations(text: str) -> list[tuple[int, str, str | None]]:
         pos = 0
         for m in sl.ADDRESS.finditer(line):
             quote = None
-            quotes = [q for q in QUOTED.finditer(line, pos, m.start())]
+            # A quote belongs to the address only when the address follows it directly.
+            quotes = [q for q in QUOTED.finditer(line, pos, m.start())
+                      if not line[q.end():m.start()].strip(" ([:,.")]
             if quotes:
                 quote = quotes[-1].group(1) or quotes[-1].group(2)
             else:
