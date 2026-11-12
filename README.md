@@ -25,7 +25,7 @@ You can also use R from RStudio as usual. The tutor only needs R to be installed
 1. Get the repo. Replace the address with the one your teacher gave you.
 
    ```
-   git clone <address of this repo>
+   git clone https://github.com/sachsmc/r-prog-agentic.git
    cd r-prog-agentic
    ```
 
