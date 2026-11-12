@@ -17,4 +17,253 @@ course:
   extra_data:
     - lectures/reg-ex.rds
 
-references: []
+# Reference sources. Licences were read from each upstream repo or site on
+# 12 Nov 2026 (see licence_note). `redistributable: true` means the licence
+# allows sharing a processed copy. Everything else is built on the student's
+# own machine and never committed.
+#
+# parser: bookdown (also Quarto books), texinfo, pdf
+# fetch:  tarball (top-level text files of the repo) or files (the listed files)
+references:
+  - id: r-intro
+    title: An Introduction to R
+    authors: W. N. Venables, D. M. Smith and the R Core Team
+    edition: R 4.6.2
+    url: https://cran.r-project.org/doc/manuals/r-release/R-intro.html
+    upstream: wch/r-source
+    pin: e85781e32cde2aa7021b921ee183972bd7988448   # branch tags/R-4-6-2
+    fetch: files
+    files: [doc/manual/R-intro.texi]
+    parser: texinfo
+    licence: R manual permission notice (verbatim and modified copies allowed if the notice is kept)
+    licence_note: read from the permission macro in doc/manual/R-defs.texi
+    redistributable: true
+    status: ok
+
+  - id: r4ds
+    title: R for Data Science
+    authors: Hadley Wickham and Garrett Grolemund
+    edition: 1st edition
+    url: https://r4ds.had.co.nz/
+    upstream: hadley/r4ds
+    pin: 2390ed29b182824f8d72ef7a30e365775395fc6f   # tag first-ed
+    parser: bookdown
+    options: {split: chapter}
+    licence: CC BY-NC-ND 3.0 US
+    licence_url: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
+    licence_note: LICENSE file and index.Rmd in the repo
+    redistributable: false
+    status: ok
+
+  - id: moderndive
+    title: Statistical Inference via Data Science
+    authors: Chester Ismay, Albert Y. Kim and Arturo Valdivia
+    edition: 2nd edition
+    url: https://moderndive.com/v2/
+    upstream: moderndive/ModernDive_book
+    pin: 4d0ca349f996682a0f36929604b6ce8ea9b76bee
+    fetch: files
+    files:
+      - index.qmd
+      - 00-foreword.qmd
+      - 00-preface.qmd
+      - 01-getting-started.qmd
+      - 02-visualization.qmd
+      - 03-wrangling.qmd
+      - 04-tidy.qmd
+      - 05-regression.qmd
+      - 06-multiple-regression.qmd
+      - 07-sampling.qmd
+      - 08-confidence-intervals.qmd
+      - 09-hypothesis-testing.qmd
+      - 10-inference-for-regression.qmd
+      - 11-tell-your-story-with-data.qmd
+      - 91-appendixA.qmd
+      - 92-appendixB.qmd
+      - 93-appendixC.qmd
+      - 94-appendixD.qmd
+      - 95-appendixE.qmd
+      - 96-glossary.qmd
+    parser: bookdown
+    options: {split: quarto, files_from_fetch: true}
+    licence: CC BY-NC-SA 4.0
+    licence_url: http://creativecommons.org/licenses/by-nc-sa/4.0/
+    licence_note: LICENSE.md and index.qmd in the repo
+    redistributable: false
+    status: ok
+
+  - id: hopr
+    title: Hands-On Programming with R
+    authors: Garrett Grolemund
+    edition: online edition
+    url: https://rstudio-education.github.io/hopr/
+    upstream: rstudio-education/hopr
+    pin: fbd5536401eb0b822ee3ab457f996c3c4846ec54
+    parser: bookdown
+    options: {split: chapter}
+    licence: CC BY-NC-ND 4.0
+    licence_url: https://creativecommons.org/licenses/by-nc-nd/4.0/
+    licence_note: LICENSE file and index.rmd in the repo
+    redistributable: false
+    status: ok
+
+  - id: adv-r
+    title: Advanced R
+    authors: Hadley Wickham
+    edition: 2nd edition
+    url: https://adv-r.hadley.nz/
+    upstream: hadley/adv-r
+    pin: 63ea8d94cdfbb13fd5dcee7d3d5e3b1e848dc7b3
+    parser: bookdown
+    options: {split: chapter}
+    licence: CC BY-NC-SA 4.0 (code also MIT)
+    licence_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+    licence_note: LICENSE.md and index.Rmd in the repo
+    redistributable: false
+    status: ok
+
+  - id: rgcookbook
+    title: R Graphics Cookbook
+    authors: Winston Chang
+    edition: 2nd edition
+    url: https://r-graphics.org/
+    upstream: wch/rgcookbook
+    pin: 9dc1d1cb5e996a98d6d58a995c637a0c096551b5
+    parser: bookdown
+    options: {split: section}
+    licence: none stated (free to read online, published by O'Reilly)
+    licence_note: no licence file or statement in the repo. Treated as all rights reserved. Ask Michael.
+    redistributable: false
+    status: ok
+
+  - id: rmarkdown
+    title: "R Markdown: The Definitive Guide"
+    authors: Yihui Xie, J. J. Allaire and Garrett Grolemund
+    edition: online edition
+    url: https://bookdown.org/yihui/rmarkdown/
+    upstream: rstudio/rmarkdown-book
+    pin: 8e7755163a7087c02751a6ed3c4ab30668cdae75
+    parser: bookdown
+    options: {split: section}
+    licence: CC BY-NC-SA 4.0
+    licence_url: http://creativecommons.org/licenses/by-nc-sa/4.0/
+    licence_note: LICENSE file and index.Rmd in the repo
+    redistributable: false
+    status: ok
+
+  - id: rmd-cookbook
+    title: R Markdown Cookbook
+    authors: Yihui Xie, Christophe Dervieux and Emily Riederer
+    edition: online edition
+    url: https://bookdown.org/yihui/rmarkdown-cookbook/
+    upstream: yihui/rmarkdown-cookbook
+    pin: 7c8ee0ab295dfe29e3b35f5d38f6a3553933a422
+    parser: bookdown
+    options: {split: section}
+    licence: CC BY-NC-SA 4.0
+    licence_url: http://creativecommons.org/licenses/by-nc-sa/4.0/
+    licence_note: statement in index.Rmd. The repo has no LICENSE file.
+    redistributable: false
+    status: ok
+
+  - id: tidy-data
+    title: Tidy Data
+    authors: Hadley Wickham
+    edition: Journal of Statistical Software 59(10), 2014
+    url: https://www.jstatsoft.org/article/view/v059i10
+    upstream: sachsmc/r-programming
+    pin: ae3897cf8537b835abcbf1803b646e7cef2b71af
+    fetch: files
+    files: [wickham-tidy-data-2014-jssv59i10.pdf]
+    parser: pdf
+    options:
+      mode: article
+      drop_lines: ['^\d+ Tidy Data$', '^Journal of Statistical Software \d+$']
+    licence: CC BY 3.0
+    licence_url: http://creativecommons.org/licenses/by/3.0/
+    licence_note: stated on the article page at jstatsoft.org
+    redistributable: true
+    status: ok
+
+  - id: layered-grammar
+    title: A Layered Grammar of Graphics
+    authors: Hadley Wickham
+    edition: Journal of Computational and Graphical Statistics 19(1), 2010
+    url: https://doi.org/10.1198/jcgs.2009.07098
+    upstream: sachsmc/r-programming
+    pin: ae3897cf8537b835abcbf1803b646e7cef2b71af
+    fetch: files
+    files: [layered-grammar.pdf]
+    parser: pdf
+    options:
+      mode: article
+      drop_lines: ['^\d+ H\. ?W ?ICKHAM$', '^A ?L ?AYERED ?G ?RAMMAR OF ?G ?RAPHICS \d+$']
+      heading_titles:
+        "1": Introduction
+        "2": How to build a plot
+        "2.1": A basic plot
+        "2.2": A more complicated plot
+        "3": Components of the layered grammar
+        "3.1": Layers
+        "3.2": Scales
+        "3.3": Coordinate system
+        "3.4": Faceting
+        "4": A hierarchy of defaults
+        "5": An embedded grammar
+        "6": Implications of the layered grammar
+        "6.1": Histograms
+        "6.2": Polar coordinates
+        "6.3": Transformations
+        "7": Perceptual issues
+        "8": Conclusions
+    licence: copyright 2010 American Statistical Association and others. Not an open licence.
+    licence_note: copyright line on page 1 of the PDF. Built locally from the PDF in the course repo. Ask Michael.
+    redistributable: false
+    status: ok
+
+  - id: cheatsheets
+    title: Posit cheatsheets
+    authors: Posit and contributors
+    edition: web versions
+    url: https://rstudio.github.io/cheatsheets/html/
+    upstream: rstudio/cheatsheets
+    pin: 1e5e2bd9b63d49237f9191684c4cfabaeb130783
+    fetch: files
+    files:
+      - html/rstudio-ide.qmd
+      - html/data-transformation.qmd
+      - html/strings.qmd
+      - html/lubridate.qmd
+      - html/rmarkdown.qmd
+    parser: bookdown
+    options: {split: quarto, files_from_fetch: true}
+    licence: CC BY 4.0
+    licence_url: https://creativecommons.org/licenses/by/4.0/
+    licence_note: LICENSE file in the repo
+    redistributable: true
+    status: ok
+
+  - id: cheatsheets-pdf
+    title: Posit cheatsheets (PDF only)
+    authors: Mhairi McNeill (Base R), data.table contributors
+    edition: PDF versions. These two have no web version in the repo.
+    url: https://rstudio.github.io/cheatsheets/
+    upstream: rstudio/cheatsheets
+    pin: 1e5e2bd9b63d49237f9191684c4cfabaeb130783
+    fetch: files
+    files: [base-r.pdf, datatable.pdf]
+    parser: pdf
+    options:
+      mode: pages
+      titles: {base-r: Base R cheatsheet, datatable: data.table cheatsheet}
+    licence: CC BY 4.0
+    licence_url: https://creativecommons.org/licenses/by/4.0/
+    licence_note: LICENSE file in the repo. The Base R sheet also says "CC BY Mhairi McNeill".
+    redistributable: true
+    status: ok
+
+  - id: rosthoj-intro
+    title: Introduction to R
+    authors: Susanne Rosthøj
+    url: http://biostat.ku.dk/r
+    status: needs-source   # the site was not reachable. Ask Michael for the file.
