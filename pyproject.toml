@@ -1,0 +1,23 @@
+[project]
+name = "r-prog-agentic"
+version = "0.1.0"
+description = "Agent-ready course material and reference search for Programming and statistical modelling in R"
+requires-python = ">=3.10"
+# The scripts in build/ and bin/ declare their own dependencies (PEP 723), so
+# `uv run <script>` needs nothing from here. This list is for editors and CI.
+dependencies = [
+    "pyyaml>=6",
+    "pypdf>=4",
+    "numpy>=1.26",
+    "tokenizers>=0.20",
+    "model2vec>=0.6",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["eval"]
+
+[tool.uv]
+package = false

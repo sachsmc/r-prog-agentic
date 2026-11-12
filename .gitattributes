@@ -1,0 +1,9 @@
+# Line endings are LF everywhere, so scripts run on every system and
+# line numbers in course files mean the same thing for everyone.
+* text=auto eol=lf
+*.rds binary
+*.xlsx binary
+*.zip binary
+*.pdf binary
+*.png binary
+*.jpg binary

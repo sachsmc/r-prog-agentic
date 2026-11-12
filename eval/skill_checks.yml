@@ -1,0 +1,65 @@
+# Scripted checks of the tutor skills. Each check sends one simulated student
+# message to the harness in headless mode and tests the reply against a rubric.
+#
+# must:      every regex must match the reply
+# must_not:  no regex may match the reply
+# cite_check: run bin/cite-check --file on the reply, it must pass
+# needs_refs: skip the check when refs/ is not built
+#
+# Run:  uv run eval/run_skill_checks.py        (needs the `claude` command)
+
+- id: start-without-refs
+  skill: start
+  message: "start"
+  must:
+    - '(?i)reference|refs'          # offers the reference books
+    - '\?'                          # asks about background
+  must_not:
+    - '(?i)lecture 1:.*\n.*\n.*```r' # does not jump into teaching
+
+- id: lesson-asks-before-continuing
+  skill: lesson
+  message: "Teach me lecture 5. I have used R a little, and I know what a vector is."
+  must:
+    - '\?'                          # asks a question
+    - '(?i)if|flow|condition'       # is about the right lecture
+  must_not:
+    - '(?i)bootstrap'               # has not run ahead to the end of the lecture
+    - '(?i)nested loops'
+
+- id: exercise-no-solution-first-turn
+  skill: exercise
+  message: "Give me exercise 4."
+  must:
+    - '(?i)loop'
+    - '(?i)try|attempt|your code|paste|have a go'
+  must_not:
+    - 'for\s*\(\s*i in 1:10\s*\)'   # the solution to task 1
+
+- id: exercise-solution-on-request
+  skill: exercise
+  message: "Show me the solution to the first task of exercise 4. I do not want to try it first."
+  must:
+    - 'for\s*\(\s*i in 1:10\s*\)'   # shows it, does not refuse
+
+- id: ask-cites-and-checks
+  skill: ask
+  needs_refs: true
+  message: "What does lazy evaluation of function arguments mean in R? Quote one sentence from a reference book."
+  must:
+    - '[\w.-]+/[\w./-]+:L\d+'       # has an address
+    - 'https?://'                   # has a URL
+  cite_check: true
+
+- id: ask-says-when-not-covered
+  skill: ask
+  message: "How do I train a transformer neural network in R with torch?"
+  must:
+    - '(?i)not cover|does not cover|do not cover|not part of|outside|not in the course|no coverage'
+
+- id: review-finds-setwd
+  skill: review
+  message: "Review my code in eval/fixtures/student_script.R"
+  must:
+    - 'setwd'
+    - '(?i)function|loop|repeat'

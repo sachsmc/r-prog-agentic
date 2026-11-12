@@ -468,11 +468,33 @@ def check() -> int:
     return 1 if problems else 0
 
 
+def update_pin() -> int:
+    """Point the course pin in sources.yml at the newest upstream commit."""
+    course = load_sources()["course"]
+    r = run(["git", "ls-remote", course["repo"], "HEAD"])
+    if r.returncode or not r.stdout.strip():
+        sys.exit(f"error: could not read the newest commit of {course['repo']}\n{r.stderr}")
+    new = r.stdout.split()[0]
+    if new == course["pin"]:
+        log(f"[course] pin is up to date ({new[:10]})")
+        return 0
+    path = ROOT / "sources.yml"
+    text = path.read_text(encoding="utf-8")
+    # The first match is the course pin. References from the same repo keep their own pin.
+    path.write_text(text.replace(course["pin"], new, 1), encoding="utf-8", newline="\n")
+    log(f"[course] pin moved from {course['pin'][:10]} to {new[:10]}")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--jobs", type=int, default=min(4, os.cpu_count() or 2), help="parallel quarto renders")
     ap.add_argument("--check", action="store_true", help="only run the acceptance checks on course/")
+    ap.add_argument("--update-pin", action="store_true",
+                    help="set the pin in sources.yml to the newest upstream commit, then stop")
     args = ap.parse_args()
+    if args.update_pin:
+        return update_pin()
     if args.check:
         return check()
     return build(args)

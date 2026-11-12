@@ -5,6 +5,7 @@ Run with -s to see the numbers:  uv run --with pytest --with pyyaml --with numpy
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -16,6 +17,17 @@ sys.path.insert(0, str(ROOT / "build"))
 import searchlib as sl  # noqa: E402
 
 GOLDEN = yaml.safe_load((ROOT / "eval" / "golden.yml").read_text(encoding="utf-8"))
+# CI builds only some of the reference sources (REFS_SUBSET=1). Questions whose
+# answers are all in sources that were not built are then left out.
+SUBSET = bool(os.environ.get("REFS_SUBSET"))
+
+
+def questions() -> list[dict]:
+    if not SUBSET:
+        return GOLDEN
+    con = sl.connect()
+    paths = [r[0] for r in con.execute("SELECT DISTINCT path FROM chunks")]
+    return [g for g in GOLDEN if any(p.startswith(a) for p in paths for a in g["a"])]
 
 
 def test_golden_set_shape():
@@ -37,11 +49,11 @@ def hit(g: dict, mode: str, k: int = 5) -> bool:
 
 
 def recall(mode: str, kind: str | None = None) -> float:
-    items = [g for g in GOLDEN if kind is None or g["kind"] == kind]
+    items = [g for g in questions() if kind is None or g["kind"] == kind]
     return sum(hit(g, mode) for g in items) / len(items)
 
 
-@pytest.mark.skipif(not full_corpus(), reason="refs/ or the index is not built")
+@pytest.mark.skipif(not full_corpus() or SUBSET, reason="needs every reference source and the index")
 def test_golden_answers_exist():
     """Every answer prefix points at something that is in the index."""
     con = sl.connect()
