@@ -1,0 +1,20 @@
+# Pinned upstream sources. `make course` and `make refs` build only from these pins.
+
+course:
+  repo: https://github.com/sachsmc/r-programming.git
+  pin: ae3897cf8537b835abcbf1803b646e7cef2b71af
+  licence: MIT
+  # .R solution files in exercises/solutions/, and the exercise set each belongs to
+  solution_scripts:
+    functions.R: functions
+    loops.R: flow-and-loops
+    tidy.R: tidy-and-reshape
+  # worked project folders in exercises/solutions/, copied as they are
+  solution_projects:
+    - penguins-analysis
+    - register-project
+  # files outside data/ that lecture code reads
+  extra_data:
+    - lectures/reg-ex.rds
+
+references: []

@@ -1,0 +1,10 @@
+refs/
+.index/
+.cache/
+progress.md
+__pycache__/
+.venv/
+*.pyc
+.Rhistory
+.RData
+.Rproj.user/

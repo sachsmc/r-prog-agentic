@@ -1,0 +1,20 @@
+# Dynamic documents: exercises
+
+Exercise set 2 | Day 1, A | Online version: <https://sachsmc.github.io/r-programming/exercises/dynamic-documents.html>
+
+### Learning objectives
+
+In this lesson you will
+
+1.  Learn how to set up a quarto or rmarkdown document
+2.  Practice managing code chunks to get output to look the way you want
+3.  Practice and get help with everything you learned in the course
+
+## Testing out Quarto
+
+1.  If you can, download and install Quarto from here: <https://quarto.org/docs/get-started/>
+2.  In Rstudio, click on “New” and then “Quarto document”. Give it a name, and choose an output format (the format that you will view the rendered document in).
+3.  Add a title, insert a code chunk, and write some prose. Example: print out the first six rows of the palmerpenguins dataset.
+4.  Click on “Render” and see what happens
+5.  Experiment with changing the yaml header options, click on Render again and see what changes. Example, if you are using the html output format, try changing the [theme](https://quarto.org/docs/output-formats/html-themes.html).
+6.  Experiment with changing one of the code chunks in the document, Re-render and see what changes.

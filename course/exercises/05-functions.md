@@ -1,0 +1,160 @@
+# Functions: exercises
+
+Exercise set 5 | Day 2, B | Online version: <https://sachsmc.github.io/r-programming/exercises/functions.html>
+
+### Learning objectives
+
+In this lesson you will
+
+1.  Learn how the `apply` family of functions works, and the alternatives using `dplyr` and `data.table`
+2.  Practice writing and reusing your own functions
+
+## Modifying the greeting function
+
+1.  Start with the basic hello function from the lecture. Modify it so that users have the option of greeting in a different language (e.g., choosing English or Danish). Provide defaults for the new arguments and use the `match.arg` inside the function body.
+2.  Document the function using quarto or roxygen2 comments
+
+## Iterating over data with functions
+
+1.  Write a function to compute the mean and standard deviation of a numeric vector. We will apply this function to the numeric variables in `penguins`, and also by different subgroups
+2.  Document your function using quarto or roxygen2 comments
+
+### Stop and think
+
+1.  What are the components of a function?
+2.  Do I have to worry about missing data? How can I deal with it?
+3.  What sort of data structure should I return?
+4.  Should I do any exception handling?
+
+## Using the function
+
+1.  Use your function to compute the mean and sd of all the numeric variables in `penguins`.
+2.  Use your function to compute the mean and sd of body mass by species and sex
+    1.  Try using one of the apply functions
+
+<details>
+
+<summary>
+
+Hints
+</summary>
+
+```r
+split(penguins$body_mass_g, list(penguins$species, penguins$sex)) |>
+  lapply(FUN = mean_sd)
+```
+
+Try `sapply` instead of `lapply`. What about `tapply`?
+</details>
+
+2.  Try using `dplyr`: check out the functions `group_by` and `summarize`
+
+<details>
+
+<summary>
+
+Hints
+</summary>
+
+```r
+library(dplyr)
+penguins |> group_by(species, sex) |>
+  summarize(mean_sd(body_mass_g))
+```
+
+</details>
+
+3.  Try using `data.table`: use the `.by` argument in the `[`
+
+<details>
+
+<summary>
+
+Hints
+</summary>
+
+```r
+library(data.table)
+pengdt <- data.table(penguins)
+
+pengdt[, mean_sd(body_mass_g), by = list(species, sex)]
+## . can be used as shorthand for list in data table
+pengdt[, mean_sd(body_mass_g), by = .(species, sex)]
+```
+
+</details>
+
+## Classes and custom generics
+
+Now that you have some functions to do something interesting, let’s create a “class” to indicate that the object has a specific meaning.
+
+1.  Modify your mean and sd function so that the data structure that is returned has class “meansd”. There are two ways to do this:
+    1.  Say the object you currently return is called `res`, instead of `res`, return `structure(res, class = "meansd")`
+    2.  Add the line `class(res) <- "meansd"` before returning \`res\`\`
+    3.  Use the `attr` function to create and assign additional information, for example the name of the variable, You can get the name of the object passed to `x` using `deparse1(substitute(x))`.
+
+<details>
+
+<summary>
+
+Hints
+</summary>
+
+```r
+mean_sd2 <- function(x, na.rm = TRUE) {
+  res <- c(mean = mean(x, na.rm = na.rm),
+           sd = sd(x, na.rm = na.rm))
+
+  attr(res, "variable") <- deparse1(substitute(x))
+  class(res) <- "meansd"
+  res
+}
+```
+
+</details>
+
+2.  Write a custom print function `print.meansd` that nicely prints the mean and standard deviation. Use the functions `round` and `paste` functions to create a string, then print it out using the `cat` function.
+
+<details>
+
+<summary>
+
+Hints
+</summary>
+
+```r
+print.meansd <- function(x, digits = 2) {
+
+  msd <- paste0(round(x["mean"], digits = digits), " (",
+                round(x["sd"], digits = digits), ")")
+
+  cat("mean (sd) of ",
+      attr(x, "variable"), ":",
+      msd, "\n")
+
+}
+```
+
+</details>
+
+## More functions – conditional calculations
+
+1.  Write a function that allows the user to choose between the mean and standard deviation, or the median and interquartile range.
+2.  What can you use as the default argument to allow the switching? Try using `match.arg`.
+3.  In your function, before doing any calculations, add a check that the data supplied by the user is numeric. Include an informative error message.
+4.  Modify your function so that it does a calculation to decide whether the mean (sd) or median (IQR) is used (e.g., check the skewness). How can you communicate to the user whether the result is the mean or median?
+
+## More functions – classes
+
+1.  Write another function that constructs a one-sample t-statistic from an estimated mean and standard deviation. Recall that the t-statistic to test the null hypothesis that $\mu = \mu_0$ is $$
+    T = \frac{\overline{X} - \mu_0}{\hat{\sigma}/\sqrt{n}}
+    $$ where $\overline{X}$ is the sample mean and $\hat{\sigma}$ is the sample standard deviation and $n$ is the sample size.
+2.  Write another function that takes the t-statistic and calculates a p-value
+3.  Compose your custom functions in order to test the null hypothesis that the mean body mass of penguins is 4000g. Try using the pipe operator `|>`.
+
+### If you have time or on your own
+
+1.  Expand your class to include confidence interval and p-value calculation/printing. Check out the `scales::pvalue` function.
+2.  Look at the `t.test` function. What type of object does this return?
+3.  Look at the print method for the class of the object returned by `t.test`, use the command `stats:::print.htest` to find the source. How does it work? How would you modify it?
+4.  Are there any other methods are available for that class? Use the `methods` function to find out. What would be another useful method for this class?

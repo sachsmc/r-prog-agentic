@@ -1,0 +1,132 @@
+# Summary and conclusion
+
+Lecture 11 | Day 4, B | Slides: <https://sachsmc.github.io/r-programming/lectures/conclusion.html>
+
+# Using copilot and other LLMs
+
+Purpose:
+
+> GitHub Copilot acts as an AI pair programmer, providing real-time, context-aware code completions (“ghost text”) as you type in R scripts.
+
+Getting started:
+
+- <https://github.com/education/students>
+- <https://docs.posit.co/ide/user/ide/guide/tools/copilot.html>
+
+How?
+
+- LLMs work by predicting text given a context (i.e., preceding text, instructions)
+- The predictions are based on a model that was trained on a *corpus*, a body of text that was fed to the model during training. Copilot’s corpus is all the code on Github.
+- The predictions are stochastic, and they are only as good as the corpus the model was trained on
+
+## How to use it
+
+Generating code
+
+- Works as a sort of autocomplete, making suggestions based on the **context**
+- The context includes the current script and comments, but can be set to include everything in an **Rstudio project**
+- They pop up automatically when you start typing, e.g., a function/object name
+
+Answering questions
+
+- Use a comment with a `# q:` at the beginning and a question mark at the end. Copilot’s completion should be an “answer” comment `# a:`.
+
+For example, the below will be completed with an `a:` followed by an answer:
+
+```r
+# q: What is the definition of standard error?
+```
+
+## Best practices
+
+- Communicate clearly to Copilot so it generates the right code. **Use the vocabulary you learned in this class**
+- Review and understand suggestions before accepting them (especially important in R where statistical correctness matters). **Nobody wants to help you fix LLM-generated code**: it is your job to make sure that it works.
+- Make sure your project context (file structure, naming conventions, data types) is clear so Copilot can leverage context.
+- AI-generated code isn’t guaranteed bug- or bias-free.
+- Check the current KU guidelines on reporting the use of LLMs/AI
+
+## Tips for getting good results
+
+> Think about the overall goal and break it down into smaller subtasks. Write down those subtasks using the language of programming.
+
+- Start broad, then narrow
+  - Begin with a description of the overall goal or scenario.
+  - Then specify details: subtasks, inputs, outputs, constraints, edge-cases.
+- Provide examples
+  - Example inputs and expected outputs.
+  - Example implementations or comments to give Copilot context.
+- Make your intent clear
+  - Mention libraries/frameworks you want to use (e.g., tidyverse, ggplot2, loops, functions).
+  - State any style or performance requirements.
+- Use high-quality comments
+  - A well written comment above an R function like `# This function takes a data frame and returns a tidy summary of each numeric column`
+  - Explain edge cases like missing data, factor levels, grouping, etc.
+- Iterate and refine
+  - Use the suggestions as a draft rather than final code.
+  - Be specific about “how” not just “what”: `Use dplyr’s group_by() + summarise(); handle NA values; return a tibble.`
+  - Consider instruction-style prompts: `# Write an R function named summarise_numeric() that ...` gives a specific action.
+
+## Try it out
+
+- Try using copilot to solve one of the exercises
+- Does it solve it correctly? Can you explain what it does and fix it if needed?
+- Does it suggest using some functions that are new to you?
+- Is it faster than doing it yourself?
+
+# What did we learn?
+
+## Project organization
+
+- Setting up your project structure
+- Documentation and readme
+- Working directories and file paths
+
+## Basic programming principles
+
+- Data structures
+- Loops and conditionals
+- Functions, classes, generics
+
+## Working with data
+
+- Tidying
+- Reshaping
+- Merging
+- Dealing with dates and strings
+- Visualization
+
+# Conclusion
+
+## Where to go from here?
+
+1.  Research project management and reproducibility
+    - `targets` package
+    - project templates
+    - git and/or github
+2.  R package development
+    - Great way to share code, data, and documentation
+    - Packages for personal and internal use
+3.  High performance computing
+    - Parallelization, using computing servers
+    - Using C/C++ (or other languages) in R
+4.  Visualization and interactivity
+    - `shiny` package
+    - Dynamic documents and graphics
+    - `ggplot2` custom Geoms and Stats
+
+## How to get help?
+
+- Keep learning on your own, remember that things change
+- Use the linked resources to get some background
+- CRAN task views, help files, vignettes
+- Google “how do I do x in R”, or Search the exact error message
+- Stackoverflow, Rstudio forums, R mailing lists
+
+# Feedback
+
+## Course feedback
+
+1.  What did you like about the course?
+2.  What did you dislike about the course?
+3.  Did you knowledge about R programming improve during the course?
+4.  Are there topics you wanted to be covered but were not?

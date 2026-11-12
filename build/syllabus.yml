@@ -1,0 +1,77 @@
+# Hand-written part of course/syllabus.md. The file list, exercise paths and data
+# files are filled in by build/convert_course.py. Keys under `lectures` are the
+# source file names without the extension.
+title: Programming and statistical modelling in R
+intro: >
+  A four-day course at the University of Copenhagen, taught by Michael C Sachs.
+  It takes people who already use R a little to the next level: organising
+  projects, working with data structures, writing loops and functions, handling
+  register data, and making graphics. Lectures are listed in teaching order.
+lectures:
+  projects:
+    exercise: projects
+    goals:
+      - Keep each project in one folder with a README and clear subfolders.
+      - Understand the working directory and avoid `setwd()` in scripts.
+      - Build file paths with the `here` package.
+  introduction:
+    exercise: null
+    goals:
+      - Know the course goals, schedule, and how to get credit.
+      - Understand in broad terms what an LLM is and why it can be wrong.
+      - See why git and unit tests make AI coding tools safer to use.
+  dynamic-documents:
+    exercise: dynamic-documents
+    goals:
+      - Mix code, output, and prose in one Quarto document.
+      - Write basic markdown and code chunks, and render to a report or slides.
+      - Control output with chunk options and make tables look good.
+  data-structures:
+    exercise: data-structures
+    goals:
+      - Create and index vectors, lists, matrices, arrays, and data frames.
+      - Spot and avoid surprises from coercion and recycling.
+      - Recognise attributes, environments, S4 objects, tibbles, and data.tables.
+      - Read data into R and write it out again.
+  flow-and-loops:
+    exercise: flow-and-loops
+    goals:
+      - Control what code runs with `if`, `else`, logical operators, and `ifelse`.
+      - Handle errors with `try` and `tryCatch`.
+      - Write `for`, `while`, and `repeat` loops, including a bootstrap.
+  functions:
+    exercise: functions
+    goals:
+      - Call functions well: arguments, `...`, composition, and the apply family.
+      - Write your own functions and understand scoping and lazy evaluation.
+      - Design and document functions, and know `do.call`, `get`, and recursion.
+  dates-and-strings:
+    exercise: dates-and-strings
+    goals:
+      - Build and format strings with `paste`, `sprintf`, and `glue`.
+      - Match and extract text with regular expressions.
+      - Parse dates and do date arithmetic with `lubridate`.
+  merging-data:
+    exercise: tidy-and-reshape
+    goals:
+      - Explain keys and one-to-many and many-to-many relationships.
+      - Join tables in base R, `data.table`, and `dplyr`.
+      - Do non-exact and rolling joins on register data.
+  tidy-data:
+    exercise: tidy-and-reshape
+    goals:
+      - Say what makes data tidy, in terms of variables and observations.
+      - Turn model output into tidy data frames with `broom`.
+      - Reshape between long and wide with pivoting and melting.
+  dataviz:
+    exercise: dataviz
+    goals:
+      - Apply five principles for clear statistical graphics.
+      - Build plots in layers with `ggplot2`, and know the base graphics basics.
+      - Choose colour palettes, reuse plot elements, and combine figures.
+  conclusion:
+    exercise: null
+    goals:
+      - Use Copilot and other LLMs for R code with care, and check what they write.
+      - Recall the main points on projects, programming, and working with data.
+      - Know where to go next and how to get help.

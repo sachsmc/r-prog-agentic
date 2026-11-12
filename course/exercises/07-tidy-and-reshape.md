@@ -1,0 +1,54 @@
+# Tidying and reshaping: exercises
+
+Exercise set 7 | Day 3, B | Online version: <https://sachsmc.github.io/r-programming/exercises/tidy-and-reshape.html>
+
+### Learning objectives
+
+In this lesson you will
+
+1.  Practice tidying statistical results
+2.  See and understand how to reshape data from wide to long and long to wide
+
+## Tidying our mean sd function
+
+1.  Look at the `mean_sd` function and especially the output. Is it tidy? In what ways is it tidy or not?
+2.  Make a new version of the function that is tidier. Extend it to include more statistics, for example, the sample size.
+3.  Apply the new `mean_sd` function to the penguins body mass in grams by species and sex. Organize the results into a table suitable for publication, where it is easy to compare the two sexes.
+4.  Check out the `broom` package, and see what other types of objects can be tidied.
+
+## Tidying the national patient register dataset
+
+Load the LPR data example from `"https://sachsmc.github.io/r-programming/data/lpr-ex.rds"`
+
+```r
+library(here)
+lpr <- readRDS(here("data", "lpr-ex.rds"))
+```
+
+Use the tidy principles to do the following:
+
+1.  Reshape the data into wide, where the columns are the primary diagnosis (hdia) at each visit number
+2.  Reshape the data into longer format, where all of the diagnoses are stored in a single variable, with another variable indicating the primary diagnosis.
+3.  Create a new variable for each participant which equals TRUE if they had any diagnosis of either D150, D152, or D159 before the date 1 January 2010.
+
+## Merging and manipulation
+
+The objective of this exercise is to describe the distribution of the number of days between hospitalizations and drug dispensations by age and sex. Your challenge is to do the following:
+
+1.  Import and merge the drug register data with the hospitalization register.
+2.  Create a new variable that counts the number of drug dispensations in the 3 months following a hospitalization.
+3.  Summarize the variable by age and sex. Try making a graphical summary.
+
+<details>
+
+<summary>
+
+Hints
+</summary>
+
+- The drug register data are stored in separate files by year. You will need to iterate over these files somehow, maybe using a loop or one of the apply functions.
+- The file names can be created programmatically with, e.g., `paste0("med-", 2005, "-ex.rds")`
+- Once they are all read in as objects, you will want to append them by row, using e.g., `rbind`
+- Join the hospitalization table to the drug table, by patient id. How to deal with the dates? We want only the most recent prescription since the last hospitalization. This is a **rolling join**
+
+</details>

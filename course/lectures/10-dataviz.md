@@ -1,0 +1,505 @@
+# Data visualization
+
+Lecture 10 | Day 4, A | Slides: <https://sachsmc.github.io/r-programming/lectures/dataviz.html>
+
+# General graphics principles
+
+## 1. Encode quantitative data as linear lengths or distances.
+
+[figure: plot, see the online slides]
+
+They are easier and more accurate to interpret than angles, area, volume, or color.
+
+## 2. Place things that are meant to be compared next to each other.
+
+[figure: plot, see the online slides]
+
+## 3. If no comparison is relevant, sort by a quantitative variable
+
+[figure: plot, see the online slides]
+
+## 4. Show the raw data or some display of uncertainty rather than only summary statistics.
+
+[figure: plot, see the online slides]
+
+## 5. Carefully choose appropriate color schemes.
+
+Be aware that 5 - 10% of the population is color blind, but color deficiencies or not, the scheme strongly affects the interpretation of the graphic.
+
+[figure: plot, see the online slides]
+
+## Graphics in R
+
+R has 2 systems for graphics generation:
+
+1.  base `graphics`
+    - “Just” draws things
+    - Figures are created by overlaying drawings in one or more steps
+    - Includes functions for “standard” statistical graphics
+2.  The `grid` system
+    - A low-level graphics system to create and arrange graphical output
+    - `ggplot2` and `lattice` are built on top of `grid`
+    - `ggplot2` uses a coherent grammar to describe figures, and gets `grid` to do the drawing
+
+## base graphics basics
+
+- The primitive types are points, lines, polygons, text, and raster images (aka bitmaps)
+  - These are the basic drawing tools that are combined to create a figure
+- Graphical parameters are all documented in `par`. These include things like point shape, line type, color, margins, font, etc.
+
+```r
+par(mar=rep(0.5, 4))  # small plot margins (bottom, left, top, right)
+plot.new()  # start a new plot
+plot.window(c(0, 6), c(0, 2), asp=1)  # x range: 0–6, y: 0–2; proportional
+x <- c(0, 0, NA, 1, 2, 3, 4, 4, 5,    6)
+y <- c(0, 2, NA, 2, 1, 2, 2, 1, 0.25, 0)
+points(x[-(1:6)], y[-(1:6)])  # symbols
+lines(x, y)   # line segments
+text(c(0, 6), c(0, 2), c("(0, 0)", "(6, 2)"), col="red")  # two text labels
+rasterImage(
+    matrix(c(1, 0,  # 2x3 pixel "image"; 0=black, 1=white
+             0, 1,
+             0, 0), byrow=TRUE, ncol=2),
+    5, 0.5, 6, 2,  # position: xleft, ybottom, xright, ytop
+    interpolate=FALSE
+)
+polygon(
+    c(4, 5, 5.5,    4),  # x coordinates of the vertices
+    c(0, 0,   1, 0.75),  # y coordinates
+    lty="dotted",   # border style
+    col="#ffff0044"  # fill colour: semi-transparent yellow
+)
+```
+
+[figure: plot produced by the code above]
+
+## Colors
+
+You can refer to colors in several ways:
+
+- by name, e.g., `"red"`, see `colors()`
+- by hex code: `"#dd3333"`
+- by specifying them in a color space with one of the functions: `rgb`, `hsv`, `hcl`.
+
+More often, you want to choose a good *color palette* .
+
+In base graphics, the `palette()` function is used to view and modify the current color palette.
+
+The default is both ugly, and can be poorly perceived when data are mapped to color values.
+
+## Choosing a palette
+
+Use the `colorspace` package to find a good palette to meet your needs. It uses the Hue-Chroma-Luminance colorspace
+
+```r
+library(colorspace)
+swatchplot(
+  "Hue"       = sequential_hcl(5, h = c(0, 300), c = c(60, 60), l = 65),
+  "Chroma"    = sequential_hcl(5, h = 0, c = c(100, 0), l = 65, rev = TRUE, power = 1),
+  "Luminance" = sequential_hcl(5, h = 260, c = c(25, 25), l = c(25, 90), rev = TRUE, power = 1),
+  off = 0
+)
+```
+
+[figure: plot produced by the code above]
+
+You can also use it to simulate color blindness
+
+```r
+library(palmerpenguins)
+par(mfrow = c(1, 2))
+palette("R3")
+plot(bill_length_mm ~ body_mass_g,
+     col = island, data = penguins, pch = 20,
+     main = "Default palette")
+legend("bottomright", fill= palette(), legend = levels(penguins$island))
+palette(deutan(palette()))
+plot(bill_length_mm ~ body_mass_g,
+     col = island, data = penguins, pch = 20,
+     main = "Deuteranope")
+legend("bottomright", fill= palette(), legend = levels(penguins$island))
+```
+
+[figure: plot produced by the code above]
+
+## `ggplot2`
+
+GG stands for “Grammar of Graphics”, and this is actually the 2nd iteration of the package. Hadley Wickham started from scratch in 2005 with ggplot2, abandoning the original ggplot1
+
+### Grammar of Graphics
+
+Introduced in the eponymous book by Leland Wilkinson, Hadley adapted a bit
+
+Hadley Wickham. **A layered grammar of graphics.** *Journal of Computational and Graphical Statistics*, vol. 19, no. 1, pp. 3–28, 2010.
+
+- The main idea is to **concisely describe** a graphic using a set of fundamental **rules and concepts**
+- In the background, this also facilitates the creation of the graphic by the software
+
+The building blocks:
+
+1.  Data and aesthetic mappings (`ggplot(data, aes(x = x, y = y))`)
+2.  Geometric objects (e.g., `geom_point()`)
+3.  Statistical transformations (e.g., `stat_smooth()`)
+4.  Scales
+5.  Facets
+6.  Coordinate systems
+
+With `ggplot2`, we describe the building blocks, and combine them to construct a graphic
+
+## `ggplot2` basics
+
+1.  Start with the data, tidy data
+
+```r
+library(ggplot2)
+
+head(penguins)
+```
+
+    #> # A tibble: 6 x 8
+    #>   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+    #>   <fct>   <fct>              <dbl>         <dbl>             <int>       <int>
+    #> 1 Adelie  Torgersen           39.1          18.7               181        3750
+    #> 2 Adelie  Torgersen           39.5          17.4               186        3800
+    #> 3 Adelie  Torgersen           40.3          18                 195        3250
+    #> 4 Adelie  Torgersen           NA            NA                  NA          NA
+    #> 5 Adelie  Torgersen           36.7          19.3               193        3450
+    #> 6 Adelie  Torgersen           39.3          20.6               190        3650
+    #> # i 2 more variables: sex <fct>, year <int>
+
+2.  Specify aesthetic mappings, i.e., how variables in the data are associated to visual elements (e.g., x position, y position, color, size, transparency, …)
+
+```r
+step1 <- ggplot(penguins,
+                aes(x = body_mass_g, y = bill_length_mm, color = species))
+step1
+```
+
+[figure: plot produced by the code above]
+
+3.  Add geometric elements
+
+```r
+step2 <- step1 + geom_point()
+step2
+```
+
+[figure: plot produced by the code above]
+
+4.  Adjust the scales
+
+```r
+plot1 <- step2 + scale_color_brewer("Species", type = "qual")
+plot1
+```
+
+[figure: plot produced by the code above]
+
+## Notes and details
+
+1.  Layers/components of the plot are distinct functions
+2.  Layers are combined with the `+`
+3.  The plot can be saved as an object (what class?)
+4.  The plot is displayed/rendered when printed
+
+### How does the adding of layers work?
+
+```r
+pgeom <- geom_point()
+class(pgeom)
+```
+
+    #> [1] "LayerInstance" "Layer"         "ggproto"       "gg"
+
+```r
+class(step1)
+```
+
+    #> [1] "gg"     "ggplot"
+
+```r
+add_gg
+```
+
+*Note: this code raised an error when the course material was built. It may be incomplete on purpose. Treat it as an exercise: work out what is needed to make it run.*
+
+    #> Error: object 'add_gg' not found
+
+## More complex plots
+
+Just keep adding layers:
+
+```r
+plot1 + stat_smooth(method = "lm")
+```
+
+[figure: plot produced by the code above]
+
+```r
+plot1 + stat_smooth(method = "lm") +
+  facet_grid(sex ~ year)
+```
+
+[figure: plot produced by the code above]
+
+```r
+plot2 <- plot1 + stat_smooth(method = "lm") +
+  facet_grid(sex ~ year) +
+  ggtitle("A nice figure", subtitle = "made by ggplot2")
+plot2
+```
+
+[figure: plot produced by the code above]
+
+## Changing how things look
+
+1.  Change titles and axis labels with `ggtitle()`, `xlab(), ylab()`, limits with `xlim(), ylim()`
+2.  Themes can be adjusted with `theme()`, changing the appearance of plot elements. The elements are all documented fairly well. There are some nice built-in themes like `theme_bw()`. Save your theme as an object for reuse.
+3.  Annotations can be added with `annotate()`, but that does not play nicely with facets. Instead use `geom_text()`
+
+```r
+mytheme <- theme(strip.background = element_rect(fill = "steelblue"),
+        text = element_text(family = "Comic sans"),
+        plot.background = element_rect(fill = "grey81"),
+        legend.background = element_rect(fill = NA),
+        legend.position = "bottom")
+
+plot2b <- plot2 + mytheme +
+  geom_text(data = data.frame(body_mass_g = 3000,
+                              bill_length_mm = 55,
+                              year = 2009, sex = NA,
+                              label = "Some missing data here"),
+            aes(label = label, color = NULL),
+            hjust = 0)
+plot2b
+```
+
+[figure: plot produced by the code above]
+
+## Tidy data is key
+
+Most plotting problems are actually data problems.
+
+Set up the thing you want to add to the plot in a tidy data frame. Then add the geometric element with the mappings.
+
+```r
+plot2 +
+  geom_text(data = data.frame(body_mass_g = 3000,
+                              bill_length_mm = 55,
+                              year = 2009, sex = NA,
+                              label = "Some missing data here"),
+            aes(label = label, color = NULL),
+            hjust = 0)
+```
+
+[figure: plot produced by the code above]
+
+Another example
+
+```r
+plot3 <- ggplot(penguins, aes(x = species, y = body_mass_g)) + geom_jitter()
+plot3
+```
+
+[figure: plot produced by the code above]
+
+These are alphabetical, how do I change the order?
+
+## Reordering things
+
+Again, this is a data problem. The order is determined by the levels of the factor
+
+```r
+class(penguins$species)
+```
+
+    #> [1] "factor"
+
+```r
+levels(as.factor(penguins$species))
+```
+
+    #> [1] "Adelie"    "Chinstrap" "Gentoo"
+
+When R converts a character to a factor, and by default the levels are determined by alphabetical order. Change the order using `factor()` or `reorder()`
+
+```r
+penguins$species2 <- factor(penguins$species,
+                            levels = c("Chinstrap", "Gentoo", "Adelie"))
+
+ggplot(penguins, aes(x = species2, y = body_mass_g)) + geom_jitter()
+```
+
+[figure: plot produced by the code above]
+
+```r
+penguins$species2 <- reorder(penguins$species2,
+                             penguins$body_mass_g,
+                             min, na.rm = TRUE)
+ggplot(penguins, aes(x = species2, y = body_mass_g)) + geom_jitter()
+```
+
+[figure: plot produced by the code above]
+
+## Challenge/exercise
+
+Add solid horizontal lines at the mean and dashed horizontal lines at 95% confidence intervals for the mean
+
+## Solution
+
+Step 1: assemble the data
+
+Step 2: add to the plot using the desired geometric elements
+
+[figure: plot, see the online slides]
+
+## Creating reusable elements
+
+It is possible to make a function that adds layers to a plot.
+
+<details class="code-fold">
+<summary>Code</summary>
+
+```r
+ggmean_ci <- function(data, yname, groupname, buffer = .45) {
+
+  means_and_cis <- split(data[[yname]], data[[groupname]]) |>
+  lapply(\(bm) {
+    ttestbm <- t.test(bm)
+    data.frame(mean = ttestbm[["estimate"]],
+               lower = ttestbm[["conf.int"]][1],
+               upper = ttestbm[["conf.int"]][2])
+  })
+
+  mcidf <- do.call("rbind.data.frame", means_and_cis)
+  mcidf[[groupname]] <- as.factor(names(means_and_cis))
+
+## get the x position with a buffer
+
+  mcidf$xmin <- as.numeric(mcidf[[groupname]]) - buffer
+  mcidf$xmax <- as.numeric(mcidf[[groupname]]) + buffer
+
+  list(
+  geom_linerange(data = mcidf, aes(xmin = xmin,
+                                   xmax = xmax,
+                                   y = mean,
+                                   color = .data[[groupname]]), linewidth = 1),
+  geom_linerange(data = mcidf, aes(xmin = xmin,
+                                     xmax = xmax,
+                                   y = lower, color = .data[[groupname]]), linetype = 2),
+  geom_linerange(data = mcidf, aes(xmin = xmin,
+                                     xmax = xmax,
+                                   y = upper, color = .data[[groupname]]), linetype = 2)
+  )
+
+}
+```
+
+</details>
+
+```r
+plot3 + ggmean_ci(penguins, "body_mass_g", "species")
+```
+
+[figure: plot produced by the code above]
+
+```r
+ggplot(penguins |> subset(!is.na(sex)), aes(x = sex, y = bill_length_mm)) +
+  geom_jitter() +
+  ggmean_ci(penguins, "bill_length_mm", "sex")
+```
+
+[figure: plot produced by the code above]
+
+## Using ggplot2 in functions
+
+1.  Note the use of `.data[[[groupname]]`. This says to use the layer data and not some other global object.
+2.  Layers cannot be added by themselves without a call to `ggplot()`. This is why we return the elements in list. Themes are an exception to this.
+
+If you want a function that takes a name or expression as a variable (instead of a string), you can do the following:
+
+```r
+ggboxplot <- function(data, yvar, xvar) {
+
+  ggplot(data, aes(x = {{ xvar }}, y = {{ yvar }})) +
+    geom_jitter() +
+    geom_boxplot(fill = NA)
+
+}
+
+ggboxplot(penguins |> subset(!is.na(sex)), bill_length_mm, sex)
+```
+
+[figure: plot produced by the code above]
+
+```r
+ggboxplot(penguins |> subset(!is.na(sex)), sqrt(bill_length_mm), sex)
+```
+
+[figure: plot produced by the code above]
+
+## Combining figures
+
+Use the `patchwork` package
+
+```r
+library(patchwork)
+
+(plot1 + plot3) / plot2
+```
+
+[figure: plot produced by the code above]
+
+There are many options for layouts and adding different elements
+
+## Interactive graphics
+
+### Why
+
+- Animation/interactivity should only be used when it enhances understanding, condenses information, makes something more accessible
+- Sometimes it is only distracting
+
+### What
+
+Interesting applications:
+
+- Summarizing complex data/results of analysis
+- Illustrating statistical concepts for education
+- Let readers play the what-if? game
+
+### How
+
+- One easy tool is the `plotly` package
+
+## Example
+
+```r
+library(plotly)
+
+ggplotly(plot1 + facet_wrap(~ year))
+```
+
+[figure: interactive plot, see the online slides]
+
+## Summary
+
+1.  Remember tidy data
+    - Keep data defining groups you want to compare (colors, facets) as variables
+    - Distinct geometric elements can be separated into different columns or different datasets
+2.  Choose good color scales
+    - `colorspace` is a great resource for this
+    - qualitative (discrete data), sequential and diverging (continuous data)
+3.  Save images at the correct size and format
+4.  Create reusable elements
+    - Functions for special types of plots
+    - Themes and groups of geoms as lists
+5.  Define your own Stats and Geoms
+    - See “Extending ggplot2” vignette
+
+# Try it yourself
+
+## Practical
+
+[Link to lesson](../exercises/dataviz.html)
+
+[Link home](../index.html)
