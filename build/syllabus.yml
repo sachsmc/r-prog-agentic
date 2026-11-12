@@ -42,7 +42,7 @@ lectures:
   functions:
     exercise: functions
     goals:
-      - Call functions well: arguments, `...`, composition, and the apply family.
+      - "Call functions well: arguments, `...`, composition, and the apply family."
       - Write your own functions and understand scoping and lazy evaluation.
       - Design and document functions, and know `do.call`, `get`, and recursion.
   dates-and-strings:

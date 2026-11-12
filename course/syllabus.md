@@ -61,7 +61,7 @@ Files are under `course/`. Data is in `course/data/`. Run R code with `course/` 
 
 - File: `course/lectures/06-functions.md`
 - Goals:
-    - {'Call functions well': 'arguments, `...`, composition, and the apply family.'}
+    - Call functions well: arguments, `...`, composition, and the apply family.
     - Write your own functions and understand scoping and lazy evaluation.
     - Design and document functions, and know `do.call`, `get`, and recursion.
 - Exercise: `course/exercises/05-functions.md`, solutions in `course/exercises/solutions/05-functions.md`

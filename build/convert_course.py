@@ -412,6 +412,10 @@ def write_syllabus(jobs: list[dict], course: dict) -> str:
             sys.exit(f"error: build/syllabus.yml has no entry for lecture '{j['stem']}'")
         out.append(f"## {j['n']}. {j['meta'].get('title')} ({j['meta'].get('subtitle')})\n")
         out.append(f"- File: `{j['out'].relative_to(ROOT).as_posix()}`")
+        for g in entry["goals"]:
+            if not isinstance(g, str):
+                sys.exit(f"error: build/syllabus.yml, lecture '{j['stem']}': a goal is not plain text "
+                         f"({g!r}). Put it in quotes if it contains a colon.")
         out.append("- Goals:")
         out += [f"    - {g}" for g in entry["goals"]]
         e = ex.get(entry.get("exercise") or "")
