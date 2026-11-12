@@ -20,7 +20,7 @@ index:
 
 # Unit tests and the retrieval evaluation.
 test:
-	$(UV) run --with pytest --with pyyaml pytest -q eval
+	$(UV) run --with pytest --with pyyaml --with numpy --with tokenizers pytest -q -s eval
 
 clean:
 	rm -rf refs .index .cache

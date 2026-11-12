@@ -1,0 +1,128 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# ///
+"""Check that quoted text really is on the cited lines.
+
+  cite-check <address> "quoted text"     exit 0 if the quote is on those lines
+  cite-check --file answer.md            check every address and quote in a draft
+
+An address is <path>:L<start>-L<end>, for example
+adv-r/08-functions/04-lazy-evaluation:L5-L6 or course/lectures/06-functions:L40-L44.
+
+In a draft, a quote belongs to the address that follows it. Write either
+  "the quoted words" (adv-r/08-functions/04-lazy-evaluation:L5-L6)
+or a block quote (lines that start with >) with the address on the next line.
+An address with no quote is checked only for a file and lines that exist.
+
+Matching ignores differences in whitespace and markdown emphasis (* and _
+around words). Nothing else: a paraphrase fails.
+"""
+import argparse
+import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "build"))
+import searchlib as sl  # noqa: E402
+
+
+def norm(text: str) -> str:
+    text = text.replace("*", "")
+    text = re.sub(r"(?<![A-Za-z0-9])_+|_+(?![A-Za-z0-9])", "", text)   # _emphasis_, not snake_case
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def cited_lines(path_part: str, start: int, end: int) -> tuple[list[str] | None, str]:
+    file = sl.resolve(path_part)
+    if file is None:
+        return None, f"no such file for '{path_part}' (looked in refs/ and course/)"
+    lines = file.read_text(encoding="utf-8").split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()
+    if start < 1 or end < start or end > len(lines):
+        return None, f"lines L{start}-L{end} are outside the file, which has {len(lines)} lines"
+    return lines[start - 1:end], ""
+
+
+def check(address: str, quote: str | None) -> tuple[bool, str]:
+    m = sl.ADDRESS.fullmatch(address.strip())
+    if not m:
+        return False, f"'{address}' is not an address. Expected <path>:L<start>-L<end>"
+    path_part, start = m.group(1), int(m.group(2))
+    end = int(m.group(3) or start)
+    lines, err = cited_lines(path_part, start, end)
+    if lines is None:
+        return False, err
+    if quote is None:
+        return True, "address exists (no quote to check)"
+    if norm(quote) and norm(quote) in norm(" ".join(lines)):
+        return True, "quote found"
+    shown = "\n".join(f"    L{start + i}: {ln}" for i, ln in enumerate(lines))
+    return False, "quote is not on the cited lines. They say:\n" + shown
+
+
+QUOTED = re.compile(r'"([^"\n]{3,})"|“([^”\n]{3,})”')
+
+
+def citations(text: str) -> list[tuple[int, str, str | None]]:
+    """(line number, address, quote or None) for every address in a draft."""
+    out = []
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        pos = 0
+        for m in sl.ADDRESS.finditer(line):
+            quote = None
+            quotes = [q for q in QUOTED.finditer(line, pos, m.start())]
+            if quotes:
+                quote = quotes[-1].group(1) or quotes[-1].group(2)
+            else:
+                j = i - 1
+                while j >= 0 and not lines[j].strip():
+                    j -= 1
+                block = []
+                while j >= 0 and lines[j].lstrip().startswith(">"):
+                    block.insert(0, lines[j].lstrip()[1:].strip())
+                    j -= 1
+                if block and not line[pos:m.start()].strip(" ([-–—:*_`"):
+                    quote = " ".join(block)
+                    quote = quote.strip().strip('"“”')
+            out.append((i + 1, m.group(0), quote))
+            pos = m.end()
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(prog="cite-check", description=__doc__.split("\n")[0])
+    ap.add_argument("address", nargs="?")
+    ap.add_argument("quote", nargs="?")
+    ap.add_argument("--file", help="a draft answer in markdown")
+    args = ap.parse_args()
+    for stream in (sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8", errors="replace")
+
+    if args.file:
+        path = Path(args.file)
+        if not path.is_file():
+            print(f"FAIL no such file: {args.file}")
+            return 2
+        found = citations(path.read_text(encoding="utf-8"))
+        if not found:
+            print("No addresses found in the draft.")
+            return 0
+        bad = 0
+        for line_no, address, quote in found:
+            ok, msg = check(address, quote)
+            bad += not ok
+            print(f"{'ok  ' if ok else 'FAIL'} line {line_no}: {address}: {msg}")
+        print(f"{len(found) - bad} of {len(found)} citations pass")
+        return 1 if bad else 0
+    if not args.address:
+        ap.error("give an address and a quote, or --file")
+    ok, msg = check(args.address, args.quote)
+    print(f"{'ok' if ok else 'FAIL'}: {msg}")
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

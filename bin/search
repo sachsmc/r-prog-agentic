@@ -1,0 +1,74 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["numpy>=1.26", "tokenizers>=0.20"]
+# ///
+"""Ranked search over the course material and the reference books.
+
+  search "query" [--source ID ...] [--k 8] [--mode hybrid|bm25|dense] [--json]
+
+Each hit has an address such as adv-r/08-functions/04-lazy-evaluation:L5-L16.
+The file is refs/<address path>.md (or course/... for course material), and
+the L numbers are line numbers in that file.
+"""
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "build"))
+import searchlib as sl  # noqa: E402
+
+
+def snippet(text: str, query: str) -> list[str]:
+    """Two lines of the chunk: the ones that share most words with the query."""
+    words = {w.lower() for w in query.replace("(", " ").replace(")", " ").split() if len(w) > 2}
+    lines = [ln.strip() for ln in text.split("\n") if ln.strip() and not ln.strip().startswith("```")]
+    if not lines:
+        return []
+    best = max(range(len(lines)), key=lambda i: (sum(w in lines[i].lower() for w in words), -i))
+    picked = lines[best:best + 2] if best + 1 < len(lines) else lines[max(0, best - 1):best + 1]
+    return [ln if len(ln) <= 160 else ln[:157] + "..." for ln in picked]
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(prog="search", description=__doc__.split("\n")[0])
+    ap.add_argument("query")
+    ap.add_argument("--source", nargs="+", metavar="ID", help="limit to these sources, for example course adv-r")
+    ap.add_argument("--k", type=int, default=8)
+    ap.add_argument("--mode", choices=["hybrid", "bm25", "dense"], default="hybrid")
+    ap.add_argument("--json", action="store_true")
+    args = ap.parse_args()
+    for stream in (sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8", errors="replace")
+
+    if not sl.DB.exists():
+        print("The search index is missing. Build it with:  uv run build/build_index.py   (or: make index)",
+              file=sys.stderr)
+        return 2
+    hits, used = sl.search(args.query, args.source, args.k, args.mode)
+    if used != args.mode:
+        print("note: BM25 only. The embedding model or vectors are missing. "
+              "Run `uv run build/build_index.py` to add them.", file=sys.stderr)
+    if args.json:
+        keep = ("address", "source", "path", "start", "end", "heading", "url", "bm25_rank", "dense_rank", "score")
+        print(json.dumps({"mode": used, "hits": [{**{k: h[k] for k in keep},
+                                                  "snippet": snippet(h["text"], args.query)} for h in hits]},
+                         indent=2, ensure_ascii=False))
+        return 0
+    if not hits:
+        print("No hits. Try other words, or use rg for an exact string.")
+        return 0
+    for i, h in enumerate(hits, 1):
+        ranks = f"bm25 #{h['bm25_rank'] or '-'}, dense #{h['dense_rank'] or '-'}"
+        print(f"{i}. {h['address']}  [{ranks}]")
+        print(f"   {h['heading']}")
+        for ln in snippet(h["text"], args.query):
+            print(f"   | {ln}")
+        if h["url"]:
+            print(f"   {h['url']}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

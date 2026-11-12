@@ -1,0 +1,110 @@
+# Retrieval test set. Each question lists address prefixes that count as a
+# correct hit: a file (course/lectures/09-tidy-data) or a whole chapter folder
+# (r4ds/12-tidy-data/). A question passes when a correct hit is in the top 5.
+#
+# kind: mismatch = the words in the question differ from the words in the text
+#       exact    = an identifier that must be matched literally
+#       general  = an ordinary topic question
+
+- {q: "turn columns into rows", kind: mismatch,
+   a: [course/lectures/09-tidy-data, r4ds/12-tidy-data/03-pivoting, moderndive/07-04-tidy/, tidy-data/03-tidying-messy-datasets/]}
+- {q: "repeat code for each group", kind: mismatch,
+   a: [course/lectures/05-flow-and-loops, course/lectures/06-functions, r4ds/05-transform/06-grouped, r4ds/21-iteration/, moderndive/06-03-wrangling/05-sec-groupby, hopr/13-loops/]}
+- {q: "combine two tables that share an id column", kind: mismatch,
+   a: [course/lectures/08-merging-data, r4ds/13-relational-data/, moderndive/06-03-wrangling/08-sec-joins, cheatsheets/01-data-transformation/08-combine-tables]}
+- {q: "where does a function look for a variable that is not defined inside it", kind: mismatch,
+   a: [course/lectures/06-functions, adv-r/08-functions/04-lexical-scoping, hopr/09-environments/, adv-r/09-environments/, r-intro/11-writing-your-own-functions/]}
+- {q: "make my code run faster", kind: mismatch,
+   a: [adv-r/30-perf-improve/, adv-r/29-perf-measure/, hopr/14-speed/, course/lectures/05-flow-and-loops, course/lectures/06-functions]}
+- {q: "put several plots next to each other", kind: mismatch,
+   a: [course/lectures/10-dataviz, rgcookbook/12-chapter-facet/, rgcookbook/15-chapter-output/, r4ds/03-data-visualisation/05-facets, moderndive/05-02-visualization/07-sec-facets]}
+- {q: "find text that matches a pattern", kind: mismatch,
+   a: [course/lectures/07-dates-and-strings, r4ds/14-strings/, cheatsheets/02-strings/]}
+- {q: "how many days between two dates", kind: mismatch,
+   a: [course/lectures/07-dates-and-strings, r4ds/16-dates-and-times/, cheatsheets/03-lubridate/]}
+- {q: "keep different kinds of things together in one object", kind: mismatch,
+   a: [course/lectures/04-data-structures, r-intro/07-lists-and-data-frames/, hopr/06-r-objects/, adv-r/05-vectors-chap/, r4ds/20-vectors/]}
+- {q: "what happens when two vectors have different lengths", kind: mismatch,
+   a: [course/lectures/04-data-structures, r-intro/03-simple-manipulations-numbers-and-vectors/, r4ds/20-vectors/04-using-atomic-vectors, hopr/02-project-1-weighted-dice/, hopr/03-basics/]}
+- {q: "a report that mixes prose with analysis results", kind: mismatch,
+   a: [course/lectures/03-dynamic-documents, rmarkdown/03-basics/, r4ds/27-r-markdown/, rmd-cookbook/03-conceptual-overview/, rmarkdown/00-preface/, rmd-cookbook/00-preface/]}
+- {q: "deal with values that are not available", kind: mismatch,
+   a: [course/lectures/04-data-structures, r-intro/03-simple-manipulations-numbers-and-vectors/, r4ds/05-transform/, r4ds/12-tidy-data/05-missing-values, r4ds/07-exploratory-data-analysis/04-missing-values, hopr/08-modify/, adv-r/05-vectors-chap/]}
+- {q: "do something only when a condition is true", kind: mismatch,
+   a: [course/lectures/05-flow-and-loops, adv-r/07-control-flow/, r-intro/10-loops-and-conditional-execution/, hopr/11-programs/, r4ds/19-functions/]}
+- {q: "keep my files organised for an analysis", kind: mismatch,
+   a: [course/lectures/01-projects, course/exercises/01-projects, r4ds/08-workflow-projects/, rmd-cookbook/17-managing-projects/]}
+- {q: "change the fonts and background of a figure", kind: mismatch,
+   a: [rgcookbook/10-chapter-appearance/, course/lectures/10-dataviz, r4ds/28-graphics-for-communication/]}
+
+- {q: "pivot_longer", kind: exact,
+   a: [course/lectures/09-tidy-data, course/exercises/, r4ds/12-tidy-data/, moderndive/07-04-tidy/]}
+- {q: "match.arg", kind: exact,
+   a: [course/lectures/06-functions, course/exercises/05-functions, adv-r/17-s3/03-s3-classes, adv-r/10-conditions/06-condition-applications]}
+- {q: "tryCatch", kind: exact,
+   a: [adv-r/10-conditions/, course/lectures/05-flow-and-loops, r4ds/18-pipes/02-piping-alternatives]}
+- {q: "do.call", kind: exact,
+   a: [course/lectures/06-functions, adv-r/24-quasiquotation/06-tidy-dots, adv-r/08-functions/02-function-fundamentals, rgcookbook/16-chapter-dataprep/, course/exercises/solutions/07-tidy-and-reshape]}
+- {q: "mapply", kind: exact,
+   a: [course/lectures/06-functions, adv-r/12-functionals/04-map-variants]}
+- {q: "fread", kind: exact,
+   a: [course/lectures/04-data-structures, cheatsheets-pdf/01-datatable/, r4ds/11-data-import/02-getting-started]}
+- {q: "facet_wrap", kind: exact,
+   a: [rgcookbook/12-chapter-facet/, r4ds/03-data-visualisation/05-facets, moderndive/05-02-visualization/07-sec-facets, course/exercises/, r4ds/23-model-basics/]}
+- {q: "left_join", kind: exact,
+   a: [r4ds/13-relational-data/, cheatsheets/01-data-transformation/08-combine-tables, moderndive/06-03-wrangling/, course/lectures/08-merging-data]}
+- {q: "sprintf", kind: exact,
+   a: [course/lectures/07-dates-and-strings, moderndive/, rgcookbook/08-chapter-annotate/, rgcookbook/09-chapter-axes/, rmd-cookbook/06-formatting/]}
+- {q: "saveRDS", kind: exact,
+   a: [course/lectures/04-data-structures, course/lectures/01-projects, hopr/18-dataio/, rmd-cookbook/15-knitr-misc/, r4ds/11-data-import/, rmd-cookbook/12-chunk-options/]}
+- {q: "seq_along", kind: exact,
+   a: [r4ds/21-iteration/, adv-r/07-control-flow/03-loops, adv-r/12-functionals/]}
+- {q: "vapply", kind: exact,
+   a: [adv-r/12-functionals/, r4ds/21-iteration/05-the-map-functions, adv-r/30-perf-improve/]}
+- {q: "str_detect", kind: exact,
+   a: [r4ds/14-strings/, cheatsheets/02-strings/]}
+- {q: "on.exit", kind: exact,
+   a: [adv-r/08-functions/07-exiting-a-function]}
+- {q: "geom_errorbar", kind: exact,
+   a: [rgcookbook/08-chapter-annotate/07-recipe-annotate-error-bar]}
+- {q: "UseMethod", kind: exact,
+   a: [hopr/12-s3/, adv-r/17-s3/, course/lectures/04-data-structures, course/lectures/06-functions, r-intro/11-writing-your-own-functions/]}
+- {q: "knitr::kable", kind: exact,
+   a: [rmd-cookbook/11-tables/, rmarkdown/03-basics/, course/lectures/03-dynamic-documents, moderndive/04-01-getting-started/]}
+
+- {q: "how do I write a for loop", kind: general,
+   a: [course/lectures/05-flow-and-loops, r4ds/21-iteration/, hopr/13-loops/, adv-r/07-control-flow/03-loops, r-intro/10-loops-and-conditional-execution/]}
+- {q: "what is a factor", kind: general,
+   a: [r-intro/05-factors/, r4ds/15-factors/, hopr/06-r-objects/, adv-r/05-vectors-chap/, course/lectures/04-data-structures]}
+- {q: "difference between a matrix and a data frame", kind: general,
+   a: [course/lectures/04-data-structures, r-intro/07-lists-and-data-frames/, r-intro/06-arrays-and-matrices/, hopr/06-r-objects/, adv-r/05-vectors-chap/]}
+- {q: "S3 classes and methods", kind: general,
+   a: [adv-r/17-s3/, hopr/12-s3/, adv-r/15-oo/, r-intro/11-writing-your-own-functions/09-object-orientation]}
+- {q: "what is tidy data", kind: general,
+   a: [course/lectures/09-tidy-data, tidy-data/, r4ds/12-tidy-data/, moderndive/07-04-tidy/]}
+- {q: "bootstrap confidence interval", kind: general,
+   a: [moderndive/11-08-confidence-intervals/, course/lectures/05-flow-and-loops, course/exercises/]}
+- {q: "the pipe operator", kind: general,
+   a: [r4ds/18-pipes/, moderndive/06-03-wrangling/02-sec-piping, course/lectures/06-functions, adv-r/08-functions/03-function-composition]}
+- {q: "read a csv file into R", kind: general,
+   a: [course/lectures/04-data-structures, r4ds/11-data-import/, moderndive/07-04-tidy/02-sec-csv, hopr/18-dataio/, r-intro/08-reading-data-from-files/, hopr/05-project-2-playing-cards/, hopr/06-r-objects/]}
+- {q: "anonymous functions", kind: general,
+   a: [course/lectures/06-functions, adv-r/08-functions/, adv-r/12-functionals/, r4ds/21-iteration/]}
+- {q: "how do environments work", kind: general,
+   a: [adv-r/09-environments/, hopr/09-environments/, course/lectures/04-data-structures]}
+- {q: "layers in the grammar of graphics", kind: general,
+   a: [layered-grammar/, course/lectures/10-dataviz, r4ds/03-data-visualisation/, moderndive/05-02-visualization/]}
+- {q: "hide the code but show the output in a report", kind: general,
+   a: [rmd-cookbook/12-chunk-options/, rmd-cookbook/05-document-elements/, rmarkdown/03-basics/, course/lectures/03-dynamic-documents, r4ds/27-r-markdown/, cheatsheets/04-rmarkdown/, rmd-cookbook/11-tables/]}
+- {q: "build file paths with the here package", kind: general,
+   a: [course/lectures/01-projects, course/exercises/01-projects, rmd-cookbook/17-managing-projects/]}
+- {q: "subset a list with double brackets or the dollar sign", kind: general,
+   a: [adv-r/06-subsetting/, hopr/07-r-notation/, r4ds/20-vectors/05-lists, r-intro/07-lists-and-data-frames/, course/lectures/04-data-structures]}
+- {q: "interpret the slope of a linear regression", kind: general,
+   a: [moderndive/08-05-regression/, moderndive/13-10-inference-for-regression/, moderndive/09-06-multiple-regression/]}
+- {q: "what does a p-value mean", kind: general,
+   a: [moderndive/12-09-hypothesis-testing/, moderndive/13-10-inference-for-regression/, moderndive/20-96-glossary/]}
+- {q: "join on the nearest earlier date", kind: general,
+   a: [course/lectures/08-merging-data]}
+- {q: "choose a colour palette for a plot", kind: general,
+   a: [course/lectures/10-dataviz, rgcookbook/13-chapter-colors/, r4ds/28-graphics-for-communication/]}
